@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "dfx": "0.10.0",
+  "canisters": {
+    "duralock": {
+      "type": "rust",
+      "package": "duralock",
+      "candid": "src/duralock/duralock.did"
+    },
+    "duralock_assets": {
+      "type": "assets",
+      "source": [
+        "src/duralock_assets/assets"
+      ],
+      "dependencies": [
+        "duralock"
+      ]
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": "",
+      "args": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  }
+}
