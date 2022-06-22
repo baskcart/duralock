@@ -1,3 +1,4 @@
 service : {
-    "greet": (text) -> (text) query;
+    "genLock": (asset: text, startdt:text, enddt:text) -> (text) ;
+    "getKey": (asset: text) -> (text) query;
 }
