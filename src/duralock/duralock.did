@@ -1,4 +1,4 @@
 service : {
-    "genLock": (asset: text, startdt:text, enddt:text) -> (text) ;
-    "getKey": (asset: text) -> (text) query;
+    "gen_lock": (asset: text, startdt:text, enddt:text) -> (text) ;
+    "get_key": (asset: text) -> (text) query;
 }
