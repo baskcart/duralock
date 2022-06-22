@@ -8,7 +8,7 @@ use oorandom::Rand64;
 use std::hash::Hash;
 use std::hash::Hasher;
 use chrono::{DateTime,Duration,Utc, NaiveDateTime};
-
+use std::cmp::Ordering;
 const  SOME_SEED:u128 = 4;
 lazy_static! {
     static ref RANDOM_GEN:Rand64 =   {
@@ -18,7 +18,7 @@ lazy_static! {
 }
 
 
-#[derive(Default,Eq,  PartialEq,  Clone)]
+#[derive(Default,Eq,  PartialEq,  Clone )]
 pub struct DuraKey{
     dura_slot: DuraSlot,
     key_hash: u64
@@ -29,9 +29,33 @@ impl Hash for DuraKey {
         self.key_hash.hash(state);
     }
 }
-
+impl Ord for DuraKey {
+    fn cmp(&self, other:&Self) -> Ordering {
+        let self_td = self.dura_slot.time_and_duration;
+        let other_td = other.dura_slot.time_and_duration;
+        if self_td > other_td {
+            return Ordering::Less;
+        }
+        if self_td < other_td {
+            return Ordering::Greater;
+        }
+        Ordering::Equal
+    }
+}
+impl PartialOrd for DuraKey {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
 impl DuraKey {
 
+    pub fn new (duration:DuraSlot) -> Self {
+        Self {
+         dura_slot : duration,
+         key_hash :0
+        }
+
+    }
     pub fn generate_key(&mut self)  -> u64{
        let random_key = 0 as u64;
       // let random_key = RANDOM_GEN.rand_u64();
@@ -62,7 +86,7 @@ impl  DuraSlot {
        Self { time_and_duration: td }
     }
 
-    pub fn new (st: String, et: String) -> Self {
+    pub fn new (sdt: String, edt: String) -> Self {
         Self { time_and_duration: 0 }
     }
 
@@ -125,9 +149,13 @@ impl DuraLockDB {
     }
 
      pub fn generate_lock(&self, name:&String, start_date_time:&String, end_date_time:&String) -> String {
-       // let lk :DuraKey = DuraKey { duraSlot: startTime, keyHash: endTime };
-       // self.assetLocks.insert(123, lk);
-        String::from("done")
+        let duration = DuraSlot::new(start_date_time.to_string(),end_date_time.to_string());
+        let mut dura_key:DuraKey = DuraKey::new(duration);
+        let key = dura_key.generate_key();
+        let asset_key = AssetKey::new(name.to_string(),0);
+        //let time_slots = self.asset_locks.get(&asset_key).unwrap();
+        //time_slots.insert(dura_key);
+        key.to_string()
     } 
 
     pub fn clean(&self) {
